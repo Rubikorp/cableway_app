@@ -1,6 +1,7 @@
-import 'package:cable_road_project/repositories/models/repairs.dart';
+import 'package:cable_road_project/repositories/models/repairs_model.dart';
+import 'package:equatable/equatable.dart';
 
-class Pole {
+class Pole extends Equatable {
   final String id;
   final String number;
   final List<Repair> repairs;
@@ -8,7 +9,7 @@ class Pole {
   final bool? check;
   final String? lastCheckDate;
 
-  Pole({
+  const Pole({
     required this.id,
     required this.number,
     required this.repairs,
@@ -41,4 +42,14 @@ class Pole {
       'lastCheckDate': lastCheckDate,
     };
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    number,
+    repairs,
+    userName,
+    check,
+    lastCheckDate,
+  ];
 }

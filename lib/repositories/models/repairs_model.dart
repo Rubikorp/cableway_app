@@ -1,4 +1,6 @@
-class Repair {
+import 'package:equatable/equatable.dart';
+
+class Repair extends Equatable {
   final String id;
   final String description;
   final bool urgent;
@@ -6,7 +8,7 @@ class Repair {
   final String date;
   final String? dateComplete;
 
-  Repair({
+  const Repair({
     required this.id,
     required this.description,
     required this.urgent,
@@ -36,4 +38,14 @@ class Repair {
       'dateComplete': dateComplete,
     };
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    description,
+    urgent,
+    completed,
+    date,
+    dateComplete,
+  ];
 }
