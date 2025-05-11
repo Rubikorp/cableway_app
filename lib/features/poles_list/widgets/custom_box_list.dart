@@ -1,4 +1,3 @@
-import 'package:cable_road_project/repositories/models/models.dart';
 import 'package:flutter/material.dart';
 
 class CustomBoxList extends StatelessWidget {

@@ -15,3 +15,17 @@ class SortPoles extends PolesEvent {
   @override
   List<Object?> get props => [];
 }
+
+class SearchPole extends PolesEvent {
+  final String query;
+
+  SearchPole({required this.query});
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class ResetPoles extends PolesEvent {
+  @override
+  List<Object?> get props => [];
+}

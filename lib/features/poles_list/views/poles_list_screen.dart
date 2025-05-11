@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cable_road_project/features/poles_list/bloc/poles_bloc.dart';
-import 'package:cable_road_project/features/poles_list/widgets/pole_tile.dart';
+import 'package:cable_road_project/features/poles_list/widgets/widget.dart';
 import 'package:cable_road_project/repositories/abstract_pole_repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +35,15 @@ class _PolesListScreenState extends State<PolesListScreen> {
             onPressed: () {
               _polesListBloc.add(SortPoles());
             },
+          ),
+          IconButton(
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: PoleSearchDelegate(polesBloc: _polesListBloc),
+              );
+            },
+            icon: Icon(Icons.search, color: Colors.black),
           ),
         ],
       ),

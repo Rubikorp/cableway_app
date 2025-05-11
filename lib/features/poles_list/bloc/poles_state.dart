@@ -14,11 +14,19 @@ class PolesLoading extends PolesState {
 
 class PolesListLoaded extends PolesState {
   final List<Pole> poles;
+  final List<Pole> originalPoles;
 
-  PolesListLoaded({required this.poles});
+  PolesListLoaded({required this.poles, required this.originalPoles});
+
+  PolesListLoaded copyWith({List<Pole>? poles, List<Pole>? originalPoles}) {
+    return PolesListLoaded(
+      poles: poles ?? this.poles,
+      originalPoles: originalPoles ?? this.originalPoles,
+    );
+  }
 
   @override
-  List<Object?> get props => [poles];
+  List<Object?> get props => [poles, originalPoles];
 }
 
 class PolesLoadingFailure extends PolesState {
