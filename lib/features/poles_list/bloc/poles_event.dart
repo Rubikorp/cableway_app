@@ -10,3 +10,8 @@ class LoadPoles extends PolesEvent {
   @override
   List<Object?> get props => [completer];
 }
+
+class SortPoles extends PolesEvent {
+  @override
+  List<Object?> get props => [];
+}

@@ -26,7 +26,18 @@ class _PolesListScreenState extends State<PolesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Главная')),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Главная'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: () {
+              _polesListBloc.add(SortPoles());
+            },
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           final completer = Completer<void>();

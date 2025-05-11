@@ -27,6 +27,33 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
         event.completer?.complete();
       }
     });
+
+    on<SortPoles>((event, emit) {
+      if (state is PolesListLoaded) {
+        final poles = List<Pole>.from((state as PolesListLoaded).poles);
+
+        poles.sort((a, b) {
+          final aIsNumber = int.tryParse(a.number);
+          final bIsNumber = int.tryParse(b.number);
+
+          // 1. Опоры с именами в конец
+          if (aIsNumber == null && bIsNumber != null) return 1;
+          if (aIsNumber != null && bIsNumber == null) return -1;
+          if (aIsNumber == null && bIsNumber == null) {
+            return a.number.compareTo(b.number);
+          }
+
+          // 2. Приоритетные (непроверенные) в начало
+          if ((a.check != true) && (b.check == true)) return -1;
+          if ((a.check == true) && (b.check != true)) return 1;
+
+          // 3. По номеру (если оба — числа)
+          return aIsNumber!.compareTo(bIsNumber!);
+        });
+
+        emit(PolesListLoaded(poles: poles));
+      }
+    });
   }
 
   @override //ловит ошибки только вне блока try catch

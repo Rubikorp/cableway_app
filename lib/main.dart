@@ -1,7 +1,6 @@
 import 'package:cable_road_project/cable_road_app.dart';
 import 'package:cable_road_project/repositories/abstract_pole_repositories.dart';
 import 'package:cable_road_project/repositories/pole_repositories.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

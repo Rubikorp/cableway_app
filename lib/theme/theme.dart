@@ -10,7 +10,7 @@ final lightTheme = ThemeData(
     199,
   ), // Цвет фона для Scaffold (всего экрана)
   listTileTheme: const ListTileThemeData(
-    iconColor: Colors.white, // Цвет иконок в списке
+    iconColor: Colors.black, // Цвет иконок в списке
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromARGB(255, 255, 217, 0), // Цвет фона AppBar
@@ -34,6 +34,11 @@ final lightTheme = ThemeData(
       color: Colors.black26,
       fontWeight: FontWeight.w700,
       fontSize: 14.0,
+    ),
+    titleLarge: TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
     ),
   ),
 );
