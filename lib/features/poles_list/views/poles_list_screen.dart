@@ -26,14 +26,31 @@ class _PolesListScreenState extends State<PolesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () {}),
       appBar: AppBar(
         centerTitle: true,
         title: Text('Главная'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.sort),
-            onPressed: () {
-              _polesListBloc.add(SortPoles());
+          BlocBuilder<PolesBloc, PolesState>(
+            bloc: _polesListBloc,
+            builder: (context, state) {
+              final isSorted = state is PolesListLoaded && state.isSorted;
+
+              return IconButton(
+                onPressed: () {
+                  _polesListBloc.add(SortPoles());
+                },
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) {
+                    return RotationTransition(turns: animation, child: child);
+                  },
+                  child: Icon(
+                    isSorted ? Icons.filter_alt : Icons.sort,
+                    key: ValueKey<bool>(isSorted), // обязательно для анимации
+                  ),
+                ),
+              );
             },
           ),
           IconButton(

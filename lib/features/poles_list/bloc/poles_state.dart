@@ -15,8 +15,13 @@ class PolesLoading extends PolesState {
 class PolesListLoaded extends PolesState {
   final List<Pole> poles;
   final List<Pole> originalPoles;
+  final bool isSorted;
 
-  PolesListLoaded({required this.poles, required this.originalPoles});
+  PolesListLoaded({
+    required this.poles,
+    required this.originalPoles,
+    this.isSorted = false,
+  });
 
   PolesListLoaded copyWith({List<Pole>? poles, List<Pole>? originalPoles}) {
     return PolesListLoaded(
@@ -26,7 +31,7 @@ class PolesListLoaded extends PolesState {
   }
 
   @override
-  List<Object?> get props => [poles, originalPoles];
+  List<Object?> get props => [poles, originalPoles, isSorted];
 }
 
 class PolesLoadingFailure extends PolesState {

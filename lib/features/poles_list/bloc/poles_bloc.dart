@@ -16,6 +16,22 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
       emit(PolesLoading());
       try {
         final poles = await polesRepository.fetchPoles();
+        poles.sort((a, b) {
+          final aIsNumber = int.tryParse(a.number);
+          final bIsNumber = int.tryParse(b.number);
+
+          // 1. Опоры с именами в конец
+          if (aIsNumber == null && bIsNumber != null) return 1;
+          if (aIsNumber != null && bIsNumber == null) return -1;
+
+          // 2. Если оба — строки (не числа)
+          if (aIsNumber == null && bIsNumber == null) {
+            return a.number.compareTo(b.number);
+          }
+
+          // 3. Если оба — числа
+          return aIsNumber!.compareTo(bIsNumber!);
+        });
         emit(PolesListLoaded(poles: poles, originalPoles: poles));
       } catch (e, st) {
         emit(PolesLoadingFailure(exception: e));
@@ -28,33 +44,48 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
     on<SortPoles>((event, emit) {
       if (state is PolesListLoaded) {
         final loadedState = state as PolesListLoaded;
-        final poles = List<Pole>.from((state as PolesListLoaded).poles);
 
-        poles.sort((a, b) {
-          final aIsNumber = int.tryParse(a.number);
-          final bIsNumber = int.tryParse(b.number);
+        if (loadedState.isSorted) {
+          // 🔁 Возвращаем оригинальный список
+          emit(
+            PolesListLoaded(
+              poles: loadedState.originalPoles,
+              originalPoles: loadedState.originalPoles,
+              isSorted: false,
+            ),
+          );
+        } else {
+          final sortedPoles = List<Pole>.from(loadedState.poles);
 
-          // 1. Опоры с именами в конец
-          if (aIsNumber == null && bIsNumber != null) return 1;
-          if (aIsNumber != null && bIsNumber == null) return -1;
-          if (aIsNumber == null && bIsNumber == null) {
-            return a.number.compareTo(b.number);
-          }
+          sortedPoles.sort((a, b) {
+            final aUrgent = a.repairs.any((r) => r.urgent == true);
+            final bUrgent = b.repairs.any((r) => r.urgent == true);
 
-          // 2. Приоритетные (непроверенные) в начало
-          if ((a.check != true) && (b.check == true)) return -1;
-          if ((a.check == true) && (b.check != true)) return 1;
+            if (aUrgent && !bUrgent) return -1;
+            if (!aUrgent && bUrgent) return 1;
 
-          // 3. По номеру (если оба — числа)
-          return aIsNumber!.compareTo(bIsNumber!);
-        });
+            final aIsNumber = int.tryParse(a.number);
+            final bIsNumber = int.tryParse(b.number);
 
-        emit(
-          PolesListLoaded(
-            poles: poles,
-            originalPoles: loadedState.originalPoles,
-          ),
-        );
+            if (aIsNumber != null && bIsNumber != null) {
+              return aIsNumber.compareTo(bIsNumber);
+            } else if (aIsNumber != null) {
+              return -1;
+            } else if (bIsNumber != null) {
+              return 1;
+            } else {
+              return a.number.compareTo(b.number);
+            }
+          });
+
+          emit(
+            PolesListLoaded(
+              poles: sortedPoles,
+              originalPoles: loadedState.originalPoles,
+              isSorted: true,
+            ),
+          );
+        }
       }
     });
 

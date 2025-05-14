@@ -1,46 +1,74 @@
 import 'package:cable_road_project/repositories/abstract_pole_repositories.dart';
 import 'package:cable_road_project/repositories/models/models.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class PoleRepository implements AbstractPoleRepositories {
   final SupabaseClient supabase;
+  final Box<Pole> polesBox;
+  final Box<UserInfo> usersBox;
 
-  PoleRepository({required this.supabase});
+  PoleRepository({
+    required this.supabase,
+    required this.polesBox,
+    required this.usersBox,
+  });
 
   @override
   /// Получить всех юзеров
   Future<List<UserInfo>> fetchUsers() async {
+    var usersList = <UserInfo>[];
     try {
-      final responce = await supabase.from('users').select();
-      final data = responce as List<dynamic>;
-      final users =
-          data
-              .map((user) => UserInfo.fromJson(user as Map<String, dynamic>))
-              .toList();
-      return users;
+      usersList = await _fetchUsersFromApi();
+
+      final usersMap = {for (var e in usersList) e.name: e};
+      await usersBox.putAll(usersMap);
     } catch (e, st) {
       GetIt.instance<Talker>().handle(e, st);
-      return [];
+      usersList = usersBox.values.toList();
     }
+
+    return usersList;
+  }
+
+  Future<List<UserInfo>> _fetchUsersFromApi() async {
+    final responce = await supabase.from('users').select();
+    final data = responce as List<dynamic>;
+    final users =
+        data
+            .map((user) => UserInfo.fromJson(user as Map<String, dynamic>))
+            .toList();
+    return users;
   }
 
   @override
   // Получить все поля
   Future<List<Pole>> fetchPoles() async {
+    var polesList = <Pole>[];
     try {
-      final res = await supabase.from('poles').select();
-      final data = res as List<dynamic>;
-      final poles =
-          data
-              .map((pole) => Pole.fromJson(pole as Map<String, dynamic>))
-              .toList();
-      return poles;
+      polesList = await _fetchPolesFromApi();
+
+      final polesMap = {for (var e in polesList) e.id: e};
+
+      await polesBox.putAll(polesMap);
     } catch (e, st) {
       GetIt.instance<Talker>().handle(e, st);
-      return [];
+      polesList = polesBox.values.toList();
     }
+
+    return polesList;
+  }
+
+  Future<List<Pole>> _fetchPolesFromApi() async {
+    final res = await supabase.from('poles').select();
+    final data = res as List<dynamic>;
+    final poles =
+        data
+            .map((pole) => Pole.fromJson(pole as Map<String, dynamic>))
+            .toList();
+    return poles;
   }
 
   @override
