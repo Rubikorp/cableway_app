@@ -1,4 +1,4 @@
-import 'package:cable_road_project/repositories/models/repairs_model.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/models/repairs_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/adapters.dart';
 

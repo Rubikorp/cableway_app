@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cable_road_project/repositories/abstract_pole_repositories.dart';
-import 'package:cable_road_project/repositories/models/pole_model.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_pole_repositories.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/models/pole_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talker_flutter/talker_flutter.dart';

@@ -1,4 +1,4 @@
-import 'package:cable_road_project/repositories/models/models.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/models/models.dart';
 
 final List<PoleImage> imgPoleSrc = [
   PoleImage(number: '1', assetPath: 'assets/poles/1.jpg'),

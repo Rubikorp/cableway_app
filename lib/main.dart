@@ -1,7 +1,8 @@
 import 'package:cable_road_project/cable_road_app.dart';
-import 'package:cable_road_project/repositories/abstract_pole_repositories.dart';
-import 'package:cable_road_project/repositories/models/models.dart';
-import 'package:cable_road_project/repositories/pole_repositories.dart';
+import 'package:cable_road_project/repositories/auth_repo.dart/auth_repo.dart';
+import 'package:cable_road_project/repositories/auth_repo.dart/models/models.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/models/models.dart';
+import 'package:cable_road_project/repositories/poles_list_repo.dart/pole_list_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -45,11 +46,11 @@ void main() async {
   );
 
   GetIt.I.registerLazySingleton<AbstractPoleRepositories>(
-    () => PoleRepository(
-      supabase: supabase,
-      polesBox: polesBox,
-      usersBox: usersBox,
-    ),
+    () => PoleRepository(supabase: supabase, polesBox: polesBox),
+  );
+
+  GetIt.I.registerLazySingleton<AbstractAuthRepositories>(
+    () => AuthRepositories(supabase: supabase, usersBox: usersBox),
   );
 
   runApp(const CableRoadApp());
