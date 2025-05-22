@@ -7,9 +7,8 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 class AuthRepositories implements AbstractAuthRepositories {
   final SupabaseClient supabase;
-  final Box<UserInfo> usersBox;
 
-  AuthRepositories({required this.supabase, required this.usersBox});
+  AuthRepositories({required this.supabase});
 
   @override
   /// Получить всех юзеров
@@ -17,14 +16,9 @@ class AuthRepositories implements AbstractAuthRepositories {
     var usersList = <UserInfo>[];
     try {
       usersList = await _fetchUsersFromApi();
-
-      final usersMap = {for (var e in usersList) e.name: e};
-      await usersBox.putAll(usersMap);
     } catch (e, st) {
       GetIt.instance<Talker>().handle(e, st);
-      usersList = usersBox.values.toList();
     }
-
     return usersList;
   }
 

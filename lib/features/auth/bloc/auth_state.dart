@@ -12,21 +12,20 @@ class UsersLoading extends AuthState {
   List<Object?> get props => [];
 }
 
-class UsersLoaded extends AuthState {
-  final List<UserInfo> users;
-
-  UsersLoaded({required this.users});
+class Authenticated extends AuthState {
+  final UserInfo user;
+  Authenticated(this.user);
 
   @override
-  List<Object?> get props => [users];
+  List<Object?> get props => [user];
 }
 
-class UsersLoadingFailure extends AuthState {
-  final Object? exception;
-
-  UsersLoadingFailure({this.exception});
-
+class Unauthenticated extends AuthState {
   @override
-  // TODO: implement props
-  List<Object?> get props => [exception];
+  List<Object?> get props => [];
+}
+
+class AuthFailed extends AuthState {
+  @override
+  List<Object?> get props => [];
 }

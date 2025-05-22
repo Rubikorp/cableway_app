@@ -11,6 +11,7 @@ class CableRoadApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       routes: routes,
+      initialRoute: '/',
     );
   }
 }

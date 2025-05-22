@@ -1,4 +1,5 @@
 import 'package:cable_road_project/cable_road_app.dart';
+import 'package:cable_road_project/features/auth/bloc/auth_bloc.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/auth_repo.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/models/models.dart';
 import 'package:cable_road_project/repositories/poles_list_repo.dart/models/models.dart';
@@ -25,9 +26,8 @@ void main() async {
   Hive.registerAdapter(PoleAdapter());
   Hive.registerAdapter(UserInfoAdapter());
   Hive.registerAdapter(RepairAdapter());
-
-  final usersBox = await Hive.openBox<UserInfo>(usersBoxKey);
   final polesBox = await Hive.openBox<Pole>(polesBoxKey);
+  final authBox = await Hive.openBox<UserInfo>(usersBoxKey);
 
   await dotenv.load(fileName: ".env");
   await Supabase.initialize(
@@ -50,7 +50,12 @@ void main() async {
   );
 
   GetIt.I.registerLazySingleton<AbstractAuthRepositories>(
-    () => AuthRepositories(supabase: supabase, usersBox: usersBox),
+    () => AuthRepositories(supabase: supabase),
+  );
+
+  GetIt.I.registerSingleton<Box<UserInfo>>(authBox);
+  GetIt.I.registerSingleton<AuthBloc>(
+    AuthBloc(GetIt.I<AbstractAuthRepositories>(), authBox),
   );
 
   runApp(const CableRoadApp());

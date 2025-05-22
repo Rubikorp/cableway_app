@@ -1,20 +1,84 @@
 import 'package:flutter/material.dart';
-    
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/auth_bloc.dart';
+
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen({super.key});
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthBloc>().add(
+        LoginSubmitted(
+          username: nameController.text,
+          password: passwordController.text,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
+      appBar: AppBar(title: Center(child: const Text("Авторизация"))),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is Authenticated) {
+                Navigator.pushReplacementNamed(context, '/poles');
+              }
+              if (state is AuthFailed) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Неверный логин или пароль')),
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is UsersLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(labelText: 'Имя'),
+                      validator:
+                          (value) => value!.isEmpty ? 'Введите имя' : null,
+                    ),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(labelText: 'Пароль'),
+                      obscureText: true,
+                      validator:
+                          (value) => value!.isEmpty ? 'Введите пароль' : null,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _login,
+                      child: const Text("Войти"),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
-      body: Container(),
     );
   }
 }
