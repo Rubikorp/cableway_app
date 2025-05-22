@@ -19,6 +19,7 @@ class AppDrawer extends StatelessWidget {
         }
 
         return Drawer(
+          backgroundColor: Colors.yellow,
           child: ListView(
             children: <Widget>[
               UserAccountsDrawerHeader(

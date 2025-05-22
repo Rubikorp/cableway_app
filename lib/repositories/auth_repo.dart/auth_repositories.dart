@@ -1,7 +1,6 @@
 import 'package:cable_road_project/repositories/auth_repo.dart/abstract_auth_repositories.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/models/user_model.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 

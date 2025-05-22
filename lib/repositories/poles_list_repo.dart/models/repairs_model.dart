@@ -4,6 +4,15 @@ import 'package:hive_flutter/adapters.dart';
 part 'repairs_model.g.dart';
 
 @HiveType(typeId: 2)
+///Модель ремонта
+///
+///Содержит параметры:
+///[id]
+///[description] - описание
+///[urgent] - статус приоритетности true/false
+///[completed] - статус выполнения true/false
+///[date] - дата выявления
+///[dateComplete] - дата выполнения
 class Repair extends Equatable {
   @HiveField(0)
   final String id;

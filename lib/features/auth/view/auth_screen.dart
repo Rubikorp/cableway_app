@@ -37,10 +37,25 @@ class _AuthScreenState extends State<AuthScreen> {
             listener: (context, state) {
               if (state is Authenticated) {
                 Navigator.pushReplacementNamed(context, '/poles');
-              }
-              if (state is AuthFailed) {
+              } else if (state is AuthFailed) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Неверный логин или пароль')),
+                );
+              } else if (state is NotLink) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Нет сети')));
+              } else if (state is LongLink) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Долгая загрузка, попробуйте позже '),
+                  ),
+                );
+              } else if (state is OtherErrorLink) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Проблемы с сетью, попробуйте позже '),
+                  ),
                 );
               }
             },
@@ -60,6 +75,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       validator:
                           (value) => value!.isEmpty ? 'Введите имя' : null,
                     ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: passwordController,
                       decoration: const InputDecoration(labelText: 'Пароль'),
@@ -67,10 +83,21 @@ class _AuthScreenState extends State<AuthScreen> {
                       validator:
                           (value) => value!.isEmpty ? 'Введите пароль' : null,
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _login,
-                      child: const Text("Войти"),
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      child: ElevatedButton(
+                        onPressed: _login,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: const Text(
+                            "Войти",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

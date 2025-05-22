@@ -9,15 +9,25 @@ import '../../../repositories/poles_list_repo.dart/models/models.dart';
 part 'repair_list_bloc_event.dart';
 part 'repair_list_bloc_state.dart';
 
+/// BLoC для управления списком ремонтов опор.
+///
+/// Отвечает за загрузку списка ремонтов и переключение вида (все/только завершённые).
 class RepairListBlocBloc
     extends Bloc<RepairListBlocEvent, RepairListBlocState> {
+  /// Репозиторий для получения данных об опорах.
   final AbstractPoleRepositories poleRepositories;
 
+  /// Конструктор [RepairListBlocBloc].
+  ///
+  /// Подписывается на события [LoadRepairList] и [ToggleRepairCompletionViewEvent].
   RepairListBlocBloc(this.poleRepositories) : super(RepairListInitial()) {
     on<LoadRepairList>(_onLoadRepairList);
     on<ToggleRepairCompletionViewEvent>(_onToggleView);
   }
 
+  /// Обработка события загрузки списка ремонтов [LoadRepairList].
+  ///
+  /// Использует переданную опору [event.pole], не делает повторный запрос в репозиторий.
   Future<void> _onLoadRepairList(
     LoadRepairList event,
     Emitter<RepairListBlocState> emit,
@@ -25,9 +35,7 @@ class RepairListBlocBloc
     try {
       emit(RepairListLoading());
 
-      // Так как pole уже передан и repairs внутри него — не грузим из репозитория
-      final pole = event.pole;
-
+      final pole = event.pole; // Repairs уже внутри переданной опоры
       emit(RepairListLoaded(poleList: [pole]));
     } catch (e, st) {
       emit(RepairListLoadingFailure(exception: e));
@@ -35,6 +43,9 @@ class RepairListBlocBloc
     }
   }
 
+  /// Обработка события переключения отображения завершённых ремонтов.
+  ///
+  /// Изменяет флаг [showCompleted] в состоянии [RepairListLoaded].
   void _onToggleView(
     ToggleRepairCompletionViewEvent event,
     Emitter<RepairListBlocState> emit,
@@ -45,6 +56,9 @@ class RepairListBlocBloc
     }
   }
 
+  /// Обработка необработанных ошибок внутри BLoC.
+  ///
+  /// Логирует ошибку через [Talker].
   @override
   void onError(Object error, StackTrace stackTrace) {
     super.onError(error, stackTrace);

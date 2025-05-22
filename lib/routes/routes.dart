@@ -1,11 +1,11 @@
-import 'package:cable_road_project/features/auth/bloc/auth_bloc.dart';
-import 'package:cable_road_project/features/auth/view/auth_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import '../features/add_pole/add_pole.dart';
+import '../features/auth/auth.dart';
 import '../features/call_list/call_list.dart';
 import '../features/poles_list/poles_list.dart';
-import '../features/repair_list/views/repairs_list_screen.dart';
+import '../features/repair_list/repair_lits.dart';
 import '../features/splash/splash.dart';
 
 final routes = {
@@ -21,6 +21,7 @@ final routes = {
         value: GetIt.I<AuthBloc>(),
         child: const PolesListScreen(),
       ),
+  '/add_pole': (context) => AddPoleScreen(),
   '/':
       (_) => BlocProvider.value(
         value: GetIt.I<AuthBloc>(),

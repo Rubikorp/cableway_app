@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/auth_repo.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/models/models.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -18,17 +21,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginSubmitted>((event, emit) async {
       try {
         final users = await authRepositories.fetchUsers();
-        final user = users.firstWhere(
+
+        final user = users.firstWhereOrNull(
           (u) =>
               u.name.trim() == event.username.trim() &&
               u.password.trim() == event.password.trim(),
-          orElse: () => throw Exception('Неверный логин или пароль'),
         );
 
-        await authBox.put('currentUser', user);
+        if (user == null && users.isNotEmpty) {
+          emit(AuthFailed()); // логин или пароль неверны
+          return;
+        }
+
+        await authBox.put('currentUser', user!);
         emit(Authenticated(user));
+      } on SocketException catch (e, st) {
+        emit(NotLink()); // нет интернета
+        GetIt.I<Talker>().handle(e, st);
+      } on TimeoutException catch (e, st) {
+        emit(LongLink()); // сервер долго отвечает
+        GetIt.I<Talker>().handle(e, st);
       } catch (e, st) {
-        emit(AuthFailed());
+        emit(OtherErrorLink()); // любая другая сетевая ошибка
         GetIt.I<Talker>().handle(e, st);
       } finally {
         event.completer?.complete();
@@ -36,21 +50,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<LogoutRequested>((event, emit) async {
-      await authBox.delete('currentUser');
-      emit(Unauthenticated());
+      await _logoutRequested(emit);
     });
 
+    /// проверка авторизации
     on<CheckAuthStatus>((event, emit) async {
-      GetIt.I<Talker>().debug('Проверка авторизации');
-      final savedUser = authBox.get('currentUser');
-      if (savedUser != null) {
-        GetIt.I<Talker>().debug('Авторизован как ${savedUser.name}');
-        emit(Authenticated(savedUser));
-      } else {
-        GetIt.I<Talker>().debug('Не авторизован');
-        emit(Unauthenticated());
-      }
+      await _checkAuthStatus(emit);
     });
+  }
+
+  Future<void> _logoutRequested(Emitter<AuthState> emit) async {
+    await authBox.delete('currentUser');
+    emit(Unauthenticated());
+  }
+
+  Future<void> _checkAuthStatus(Emitter<AuthState> emit) async {
+    GetIt.I<Talker>().debug('Проверка авторизации');
+    final users = await authRepositories.fetchUsers();
+    final savedUser = authBox.get('currentUser');
+
+    final user = users.firstWhereOrNull(
+      (u) =>
+          u.name.trim() == savedUser!.name.trim() &&
+          u.password.trim() == savedUser.password.trim(),
+    );
+
+    if (savedUser != null && user != null) {
+      GetIt.I<Talker>().debug('Авторизован как ${savedUser.name}');
+      emit(Authenticated(savedUser));
+    } else {
+      GetIt.I<Talker>().debug('Не авторизован');
+      emit(Unauthenticated());
+    }
   }
 
   @override //ловит ошибки только вне блока try catch

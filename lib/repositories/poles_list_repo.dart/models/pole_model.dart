@@ -5,6 +5,15 @@ import 'package:hive_flutter/adapters.dart';
 part 'pole_model.g.dart';
 
 @HiveType(typeId: 1)
+///Модель опоры
+///
+///Содержит параметры:
+///[id]
+///[number] - номер опоры
+///[repairs] - список ремонтов
+///[userName] - пользователь производивший проверку
+///[check] - статус проверки true/false
+///[lastCheckDate] - дата последней проверки
 class Pole extends Equatable {
   @HiveField(0)
   final String id;

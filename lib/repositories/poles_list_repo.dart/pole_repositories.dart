@@ -5,14 +5,28 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
+/// Репозиторий для управления данными опор (poles).
+///
+/// Получает, сохраняет, обновляет и удаляет данные опор
+/// из удалённого источника (Supabase) и локального кэша (Hive).
 class PoleRepository implements AbstractPoleRepositories {
+  /// Клиент Supabase для работы с удалённой базой данных.
   final SupabaseClient supabase;
+
+  /// Hive Box для локального хранения опор.
   final Box<Pole> polesBox;
 
+  /// Создаёт [PoleRepository] с необходимыми зависимостями.
+  ///
+  /// [supabase] — клиент Supabase для сетевых операций.
+  /// [polesBox] — локальное хранилище (кэш) для опор.
   PoleRepository({required this.supabase, required this.polesBox});
 
   @override
-  // Получить все поля
+  /// Получает список всех опор.
+  ///
+  /// Сначала пытается загрузить данные с сервера.
+  /// В случае ошибки — возвращает данные из локального кэша [polesBox].
   Future<List<Pole>> fetchPoles() async {
     var polesList = <Pole>[];
     try {
@@ -29,6 +43,9 @@ class PoleRepository implements AbstractPoleRepositories {
     return polesList;
   }
 
+  /// Получает опоры с сервера Supabase.
+  ///
+  /// Преобразует полученные данные в список моделей [Pole].
   Future<List<Pole>> _fetchPolesFromApi() async {
     final res = await supabase.from('poles').select();
     final data = res as List<dynamic>;
@@ -40,7 +57,9 @@ class PoleRepository implements AbstractPoleRepositories {
   }
 
   @override
-  /// Добавить новое поле
+  /// Добавляет новую опору [pole] в Supabase.
+  ///
+  /// Возвращает `true`, если операция успешна, иначе `false`.
   Future<bool> addPole(Pole pole) async {
     try {
       await supabase.from('poles').insert(pole.toJson());
@@ -52,7 +71,10 @@ class PoleRepository implements AbstractPoleRepositories {
   }
 
   @override
-  /// Обновить поле по ID
+  /// Обновляет опору по её [id].
+  ///
+  /// Можно передать обновлённые [number] и/или [repairs].
+  /// Возвращает `true`, если операция прошла успешно.
   Future<bool> updatePole(
     String id, {
     String? number,
@@ -77,7 +99,7 @@ class PoleRepository implements AbstractPoleRepositories {
   }
 
   @override
-  /// Удалить поле по ID
+  /// Удаляет опору по [id] из базы Supabase.
   Future<void> deletePole(String id) async {
     try {
       await supabase.from('poles').delete().eq('id', id);

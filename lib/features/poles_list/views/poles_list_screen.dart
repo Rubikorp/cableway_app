@@ -6,9 +6,6 @@ import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_po
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:talker_flutter/talker_flutter.dart';
-
-import '../../auth/bloc/auth_bloc.dart';
 
 class PolesListScreen extends StatefulWidget {
   const PolesListScreen({super.key});

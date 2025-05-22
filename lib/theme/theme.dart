@@ -43,8 +43,8 @@ final lightTheme = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      foregroundColor: const Color.fromARGB(255, 253, 143, 0),
+      backgroundColor: const Color.fromARGB(255, 250, 171, 1),
+      foregroundColor: const Color.fromARGB(255, 20, 20, 20),
     ),
   ),
 );
