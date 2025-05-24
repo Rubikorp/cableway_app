@@ -60,7 +60,7 @@ class PoleRepository implements AbstractPoleRepositories {
   /// Добавляет новую опору [pole] в Supabase.
   ///
   /// Возвращает `true`, если операция успешна, иначе `false`.
-  Future<bool> addPole(Pole pole) async {
+  Future<bool> addPole(PoleAdd pole) async {
     try {
       await supabase.from('poles').insert(pole.toJson());
       return true;

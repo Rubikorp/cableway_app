@@ -17,6 +17,7 @@ class PoleAdapter extends TypeAdapter<Pole> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Pole(
+      id: fields[0] as String,
       number: fields[1] as String,
       repairs: (fields[2] as List).cast<Repair>(),
       userName: fields[3] as String?,
@@ -30,6 +31,7 @@ class PoleAdapter extends TypeAdapter<Pole> {
     writer
       ..writeByte(6)
       ..writeByte(0)
+      ..write(obj.id)
       ..writeByte(1)
       ..write(obj.number)
       ..writeByte(2)

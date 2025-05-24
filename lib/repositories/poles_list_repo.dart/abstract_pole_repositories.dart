@@ -12,7 +12,7 @@ abstract class AbstractPoleRepositories {
   /// Добавляет новую опору [pole] в хранилище.
   ///
   /// Возвращает `true`, если операция прошла успешно, иначе `false`.
-  Future<bool> addPole(Pole pole);
+  Future<bool> addPole(PoleAdd pole);
 
   /// Обновляет существующую опору по её [id].
   ///

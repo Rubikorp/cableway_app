@@ -1,35 +1,14 @@
 import 'package:cable_road_project/repositories/poles_list_repo.dart/models/repairs_model.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hive_flutter/adapters.dart';
 
-part 'pole_model.g.dart';
-
-@HiveType(typeId: 1)
-///Модель опоры
-///
-///Содержит параметры:
-///[id]
-///[number] - номер опоры
-///[repairs] - список ремонтов
-///[userName] - пользователь производивший проверку
-///[check] - статус проверки true/false
-///[lastCheckDate] - дата последней проверки
-class Pole extends Equatable {
-  @HiveField(0)
-  final String id;
-  @HiveField(1)
+class PoleAdd extends Equatable {
   final String number;
-  @HiveField(2)
   final List<Repair> repairs;
-  @HiveField(3)
   final String? userName;
-  @HiveField(4)
   final bool? check;
-  @HiveField(5)
   final String? lastCheckDate;
 
-  const Pole({
-    required this.id,
+  const PoleAdd({
     required this.number,
     required this.repairs,
     this.userName,
@@ -37,9 +16,8 @@ class Pole extends Equatable {
     this.lastCheckDate,
   });
 
-  factory Pole.fromJson(Map<String, dynamic> json) {
-    return Pole(
-      id: json['id'],
+  factory PoleAdd.fromJson(Map<String, dynamic> json) {
+    return PoleAdd(
       number: json['number'],
       repairs:
           (json['repairs'] as List<dynamic>)
@@ -53,7 +31,6 @@ class Pole extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'number': number,
       'repairs': repairs.map((e) => e.toJson()).toList(),
       'userName': userName,
@@ -63,12 +40,5 @@ class Pole extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    id,
-    number,
-    repairs,
-    userName,
-    check,
-    lastCheckDate,
-  ];
+  List<Object?> get props => [number, repairs, userName, check, lastCheckDate];
 }
