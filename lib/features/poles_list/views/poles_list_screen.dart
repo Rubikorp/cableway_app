@@ -30,7 +30,9 @@ class _PolesListScreenState extends State<PolesListScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed("/add_pole");
+        },
         child: Icon(Icons.add),
       ),
       appBar: AppBar(

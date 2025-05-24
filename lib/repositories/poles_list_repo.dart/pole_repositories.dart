@@ -32,7 +32,7 @@ class PoleRepository implements AbstractPoleRepositories {
     try {
       polesList = await _fetchPolesFromApi();
 
-      final polesMap = {for (var e in polesList) e.id: e};
+      final polesMap = {for (var e in polesList) e.number: e};
 
       await polesBox.putAll(polesMap);
     } catch (e, st) {

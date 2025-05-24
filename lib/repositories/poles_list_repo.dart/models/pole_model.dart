@@ -15,8 +15,6 @@ part 'pole_model.g.dart';
 ///[check] - статус проверки true/false
 ///[lastCheckDate] - дата последней проверки
 class Pole extends Equatable {
-  @HiveField(0)
-  final String id;
   @HiveField(1)
   final String number;
   @HiveField(2)
@@ -29,7 +27,6 @@ class Pole extends Equatable {
   final String? lastCheckDate;
 
   const Pole({
-    required this.id,
     required this.number,
     required this.repairs,
     this.userName,
@@ -39,7 +36,6 @@ class Pole extends Equatable {
 
   factory Pole.fromJson(Map<String, dynamic> json) {
     return Pole(
-      id: json['id'],
       number: json['number'],
       repairs:
           (json['repairs'] as List<dynamic>)
@@ -53,7 +49,6 @@ class Pole extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'number': number,
       'repairs': repairs.map((e) => e.toJson()).toList(),
       'userName': userName,
@@ -63,12 +58,5 @@ class Pole extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    id,
-    number,
-    repairs,
-    userName,
-    check,
-    lastCheckDate,
-  ];
+  List<Object?> get props => [number, repairs, userName, check, lastCheckDate];
 }
