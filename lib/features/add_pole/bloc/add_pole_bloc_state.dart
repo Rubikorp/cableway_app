@@ -1,36 +1,41 @@
-part of 'add_pole_bloc_bloc.dart';
+part of 'add_pole_bloc.dart';
 
 abstract class AddPoleBlocState extends Equatable {
   const AddPoleBlocState();
 }
 
-class AddPoleBlocInitial extends AddPoleBlocState {
+class AddPoleInitial extends AddPoleBlocState {
+  @override
+  List<Object?> get props => [];
+}
+
+class AddPoleLoaded extends AddPoleBlocState {
   final String name;
   final List<Repair> repairs;
-  final bool isLoading;
-  final String? error;
 
-  const AddPoleBlocInitial({
-    this.name = '',
-    this.repairs = const [],
-    this.isLoading = false,
-    this.error,
-  });
+  const AddPoleLoaded({this.name = '', this.repairs = const []});
 
-  AddPoleBlocInitial copyWith({
-    String? name,
-    List<Repair>? repairs,
-    bool? isLoading,
-    String? error,
-  }) {
-    return AddPoleBlocInitial(
+  AddPoleLoaded copyWith({String? name, List<Repair>? repairs}) {
+    return AddPoleLoaded(
       name: name ?? this.name,
       repairs: repairs ?? this.repairs,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
     );
   }
 
   @override
-  List<Object?> get props => [name, repairs, isLoading, error];
+  List<Object?> get props => [name, repairs];
+}
+
+class AddPoleLoadingFailure extends AddPoleBlocState {
+  final Object? exception;
+
+  const AddPoleLoadingFailure({this.exception});
+
+  @override
+  List<Object?> get props => [exception];
+}
+
+class AddPoleLoading extends AddPoleBlocState {
+  @override
+  List<Object?> get props => [];
 }

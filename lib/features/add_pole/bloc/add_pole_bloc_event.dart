@@ -1,16 +1,17 @@
-part of 'add_pole_bloc_bloc.dart';
+part of 'add_pole_bloc.dart';
 
 abstract class AddPoleBlocEvent extends Equatable {
   const AddPoleBlocEvent();
 }
 
-class AddPoleNameChanged extends AddPoleBlocEvent {
-  final String name;
+class LoadAddPole extends AddPoleBlocEvent {
+  final Completer? completer;
+  final String number;
 
-  const AddPoleNameChanged(this.name);
+  const LoadAddPole({this.completer, required this.number});
 
   @override
-  List<Object?> get props => [name];
+  List<Object?> get props => [completer, number];
 }
 
 class AddRepairPressed extends AddPoleBlocEvent {
@@ -20,13 +21,6 @@ class AddRepairPressed extends AddPoleBlocEvent {
 
   @override
   List<Object?> get props => [repair];
-}
-
-class SubmitPolePressed extends AddPoleBlocEvent {
-  const SubmitPolePressed();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class ResetAddPoleState extends AddPoleBlocEvent {

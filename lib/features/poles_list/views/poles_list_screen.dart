@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../add_pole/add_pole.dart';
+
 class PolesListScreen extends StatefulWidget {
   const PolesListScreen({super.key});
 
@@ -16,11 +18,18 @@ class PolesListScreen extends StatefulWidget {
 
 class _PolesListScreenState extends State<PolesListScreen> {
   final _polesListBloc = PolesBloc(GetIt.I<AbstractPoleRepositories>());
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     _polesListBloc.add(LoadPoles());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // ← не забываем
+    super.dispose();
   }
 
   @override
@@ -31,7 +40,16 @@ class _PolesListScreenState extends State<PolesListScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: () {
-          Navigator.of(context).pushNamed("/add_pole");
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (_) => AddPoleScreen(
+                    onPoleAdded: () {
+                      _polesListBloc.add(LoadPoles());
+                    },
+                  ),
+            ),
+          );
         },
         child: Icon(Icons.add),
       ),
@@ -83,14 +101,20 @@ class _PolesListScreenState extends State<PolesListScreen> {
           bloc: _polesListBloc,
           builder: (context, state) {
             if (state is PolesListLoaded) {
-              return ListView.separated(
-                padding: EdgeInsets.all(10),
-                itemCount: state.poles.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
-                  final pole = state.poles[index];
-                  return PoleTile(pole: pole);
-                },
+              return Scrollbar(
+                thumbVisibility: true,
+                controller: _scrollController,
+                interactive: true,
+                child: ListView.separated(
+                  controller: _scrollController,
+                  padding: EdgeInsets.all(10),
+                  itemCount: state.poles.length,
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final pole = state.poles[index];
+                    return PoleTile(pole: pole, bloc: _polesListBloc);
+                  },
+                ),
               );
             } else if (state is PolesLoading) {
               return Center(child: CircularProgressIndicator());

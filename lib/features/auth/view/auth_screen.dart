@@ -83,19 +83,14 @@ class _AuthScreenState extends State<AuthScreen> {
                       validator:
                           (value) => value!.isEmpty ? 'Введите пароль' : null,
                     ),
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      child: ElevatedButton(
-                        onPressed: _login,
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: const Text(
-                            "Войти",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: _login,
+                      child: const Text(
+                        "Войти",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),

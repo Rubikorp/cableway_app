@@ -1,5 +1,6 @@
 import 'package:cable_road_project/cable_road_app.dart';
 import 'package:cable_road_project/features/auth/bloc/auth_bloc.dart';
+import 'package:cable_road_project/features/poles_list/bloc/poles_bloc.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/auth_repo.dart';
 import 'package:cable_road_project/repositories/auth_repo.dart/models/models.dart';
 import 'package:cable_road_project/repositories/poles_list_repo.dart/models/models.dart';
@@ -56,6 +57,9 @@ void main() async {
   GetIt.I.registerSingleton<Box<UserInfo>>(authBox);
   GetIt.I.registerSingleton<AuthBloc>(
     AuthBloc(GetIt.I<AbstractAuthRepositories>(), authBox),
+  );
+  GetIt.I.registerSingleton<PolesBloc>(
+    PolesBloc(GetIt.I<AbstractPoleRepositories>()),
   );
 
   runApp(const CableRoadApp());

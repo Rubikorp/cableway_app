@@ -39,6 +39,14 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
     on<ResetPoles>((event, emit) {
       _resetPoles(emit);
     });
+
+    on<DeletePole>((event, emit) async {
+      try {
+        await polesRepository.deletePole(event.deletePoleId);
+      } catch (e, st) {
+        GetIt.instance<Talker>().handle(e, st);
+      }
+    });
   }
 
   /// Загружает список опор из репозитория и сортирует их по номеру.

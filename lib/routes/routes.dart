@@ -21,7 +21,6 @@ final routes = {
         value: GetIt.I<AuthBloc>(),
         child: const PolesListScreen(),
       ),
-  '/add_pole': (context) => AddPoleScreen(),
   '/':
       (_) => BlocProvider.value(
         value: GetIt.I<AuthBloc>(),
