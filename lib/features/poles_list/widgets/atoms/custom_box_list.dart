@@ -23,15 +23,14 @@ class CustomBoxList extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(width: 1, color: borderColor),
         color: bgColor,
-        borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(title, style: theme.textTheme.labelLarge),
+            child: Text(title, style: theme.textTheme.titleMedium),
           ),
           ...repairs.map(
             (e) => Text("- $e", style: theme.textTheme.labelMedium),

@@ -47,8 +47,10 @@ class ResetPoles extends PolesEvent {
 
 class DeletePole extends PolesEvent {
   final String deletePoleId;
-  DeletePole({required this.deletePoleId});
+  final Completer? completer;
+
+  DeletePole({required this.deletePoleId, this.completer});
 
   @override
-  List<Object?> get props => [deletePoleId];
+  List<Object?> get props => [deletePoleId, completer];
 }

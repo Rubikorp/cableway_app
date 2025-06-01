@@ -41,9 +41,12 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
     });
 
     on<DeletePole>((event, emit) async {
+      emit(DeletePoleLoading());
       try {
         await polesRepository.deletePole(event.deletePoleId);
+        emit(DeletedPoleLoaded());
       } catch (e, st) {
+        emit(DeletePoleFailure(exception: e));
         GetIt.instance<Talker>().handle(e, st);
       }
     });

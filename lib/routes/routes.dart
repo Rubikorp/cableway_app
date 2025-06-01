@@ -1,7 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-
-import '../features/add_pole/add_pole.dart';
 import '../features/auth/auth.dart';
 import '../features/call_list/call_list.dart';
 import '../features/poles_list/poles_list.dart';

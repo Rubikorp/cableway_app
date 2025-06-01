@@ -62,3 +62,23 @@ class PolesLoadingFailure extends PolesState {
   @override
   List<Object?> get props => [exception];
 }
+
+class DeletePoleLoading extends PolesState {
+  @override
+  List<Object?> get props => [];
+}
+
+class DeletedPoleLoaded extends PolesState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class DeletePoleFailure extends PolesState {
+  final Object? exception;
+
+  DeletePoleFailure({this.exception});
+
+  @override
+  List<Object?> get props => [];
+}

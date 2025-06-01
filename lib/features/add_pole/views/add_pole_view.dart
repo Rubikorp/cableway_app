@@ -1,11 +1,6 @@
 import 'dart:async';
-
-import 'package:cable_road_project/features/poles_list/bloc/poles_bloc.dart';
-import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_pole_repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-
 import '../../../repositories/poles_list_repo.dart/models/models.dart';
 import '../bloc/add_pole_bloc.dart';
 import '../widgets/widgets.dart';
@@ -30,16 +25,21 @@ class _AddPoleViewState extends State<AddPoleView> {
         LoadAddPole(number: numberController.text, completer: completer),
       );
       await completer.future;
+
+      if (!mounted) return;
+
       widget.onPoleAdded(); // вот здесь вызываем
       Navigator.of(context).pop();
     }
   }
 
-  void _showAddRepairDialog(BuildContext context) async {
+  void _showAddRepairDialog() async {
     final result = await showDialog<Repair>(
       context: context,
       builder: (_) => const AddRepairDialog(),
     );
+
+    if (!mounted) return;
 
     if (result != null) {
       context.read<AddPoleBloc>().add(AddRepairPressed(result));
@@ -64,7 +64,7 @@ class _AddPoleViewState extends State<AddPoleView> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _showAddRepairDialog(context),
+                onPressed: () => _showAddRepairDialog(),
                 child: const Text('Добавить ремонт'),
               ),
               const SizedBox(height: 10),

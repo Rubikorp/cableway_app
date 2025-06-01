@@ -40,6 +40,11 @@ final lightTheme = ThemeData(
       fontWeight: FontWeight.bold,
       fontSize: 24,
     ),
+    labelMedium: TextStyle(
+      color: Colors.black,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+    ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

@@ -28,7 +28,7 @@ class _PolesListScreenState extends State<PolesListScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose(); // ← не забываем
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -107,7 +107,7 @@ class _PolesListScreenState extends State<PolesListScreen> {
                 interactive: true,
                 child: ListView.separated(
                   controller: _scrollController,
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
                   itemCount: state.poles.length,
                   separatorBuilder: (context, index) => const Divider(),
                   itemBuilder: (context, index) {
