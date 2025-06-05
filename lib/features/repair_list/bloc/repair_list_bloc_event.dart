@@ -28,3 +28,44 @@ class ToggleRepairCompletionViewEvent extends RepairListBlocEvent {
   @override
   List<Object?> get props => [];
 }
+
+class AddRepairLocal extends RepairListBlocEvent {
+  final Repair repair;
+  AddRepairLocal({required this.repair});
+  @override
+  List<Object?> get props => [repair];
+}
+
+class DeleteRepairLocal extends RepairListBlocEvent {
+  final Repair repair;
+  DeleteRepairLocal(this.repair);
+  @override
+  List<Object?> get props => [repair];
+}
+
+class EditRepairLocal extends RepairListBlocEvent {
+  final Repair oldRepair;
+  final String newDescription;
+  final bool newUrgent;
+  EditRepairLocal({
+    required this.oldRepair,
+    required this.newDescription,
+    required this.newUrgent,
+  });
+  @override
+  List<Object?> get props => [oldRepair, newDescription, newUrgent];
+}
+
+class ToggleRepairCompletedLocal extends RepairListBlocEvent {
+  final Repair repair;
+  ToggleRepairCompletedLocal(this.repair);
+  @override
+  List<Object?> get props => [repair];
+}
+
+class SubmitRepairs extends RepairListBlocEvent {
+  SubmitRepairs();
+
+  @override
+  List<Object?> get props => [];
+}

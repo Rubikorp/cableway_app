@@ -4,7 +4,7 @@ class CustomBoxList extends StatelessWidget {
   final Color borderColor;
   final Color bgColor;
   final String title;
-  final List<String> repairs;
+  final List<InlineSpan> repairs;
 
   const CustomBoxList({
     super.key,
@@ -33,7 +33,13 @@ class CustomBoxList extends StatelessWidget {
             child: Text(title, style: theme.textTheme.titleMedium),
           ),
           ...repairs.map(
-            (e) => Text("- $e", style: theme.textTheme.labelMedium),
+            (span) => RichText(
+              text: TextSpan(
+                text: "- ",
+                style: theme.textTheme.labelMedium,
+                children: [span],
+              ),
+            ),
           ),
         ],
       ),

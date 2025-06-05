@@ -11,8 +11,13 @@ import '../../../repositories/poles_list_repo.dart/abstract_pole_repositories.da
 import 'atoms/atoms.dart';
 
 class PoleTile extends StatelessWidget {
-  const PoleTile({super.key, required this.pole, required this.bloc});
-
+  const PoleTile({
+    super.key,
+    required this.pole,
+    required this.bloc,
+    this.searchQuery,
+  });
+  final String? searchQuery;
   final Pole pole;
   final PolesBloc bloc;
 
@@ -26,12 +31,50 @@ class PoleTile extends StatelessWidget {
     final repairsPrior = repairs.where(
       (repair) => repair.urgent && !repair.completed,
     );
+
     void deletePole() {
       bloc.add(DeletePole(deletePoleId: pole.id));
       if (bloc.state is DeletedPoleLoaded) {
         bloc.add(LoadPoles());
         Navigator.of(context).pop(true);
       }
+    }
+
+    // Метод подсветки
+    InlineSpan _highlightOccurrences(String source, String? query) {
+      if (query == null || query.isEmpty) {
+        return TextSpan(text: source);
+      }
+
+      final matches = <TextSpan>[];
+      final lowerSource = source.toLowerCase();
+      final lowerQuery = query.toLowerCase();
+
+      int start = 0;
+      int index;
+      while ((index = lowerSource.indexOf(lowerQuery, start)) != -1) {
+        if (index > start) {
+          matches.add(TextSpan(text: source.substring(start, index)));
+        }
+
+        matches.add(
+          TextSpan(
+            text: source.substring(index, index + query.length),
+            style: const TextStyle(
+              backgroundColor: Colors.yellow,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+
+        start = index + query.length;
+      }
+
+      if (start < source.length) {
+        matches.add(TextSpan(text: source.substring(start)));
+      }
+
+      return TextSpan(children: matches);
     }
 
     return ListTile(
@@ -170,8 +213,12 @@ class PoleTile extends StatelessWidget {
                                     (pole.lastCheckDate != null &&
                                             pole.userName != null)
                                         ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Row(
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   "Проверил: ",
@@ -240,6 +287,7 @@ class PoleTile extends StatelessWidget {
                       ],
                     ),
                     TextButton(
+                      style: TextButton.styleFrom(padding: EdgeInsets.all(0)),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -257,6 +305,7 @@ class PoleTile extends StatelessWidget {
                       },
                       child: Column(
                         children: [
+                          SizedBox(height: 10),
                           Center(
                             child: Text(
                               "Список ремонтов:",
@@ -279,7 +328,12 @@ class PoleTile extends StatelessWidget {
                               title: 'Приоритет:',
                               repairs:
                                   repairsPrior
-                                      .map((e) => e.description)
+                                      .map(
+                                        (e) => _highlightOccurrences(
+                                          e.description,
+                                          searchQuery,
+                                        ),
+                                      )
                                       .toList(),
                             ),
                             const SizedBox(height: 10),
@@ -297,7 +351,12 @@ class PoleTile extends StatelessWidget {
                               title: 'Не завершенные:',
                               repairs:
                                   repairsUncomplete
-                                      .map((e) => e.description)
+                                      .map(
+                                        (e) => _highlightOccurrences(
+                                          e.description,
+                                          searchQuery,
+                                        ),
+                                      )
                                       .toList(),
                             ),
                             const SizedBox(height: 10),

@@ -18,7 +18,14 @@ abstract class AbstractPoleRepositories {
   ///
   /// Можно частично обновить [number] или [repairs].
   /// Возвращает `true`, если обновление прошло успешно.
-  Future<bool> updatePole(String id, {String? number, List<Repair>? repairs});
+  Future<bool> updatePole(
+    String id, {
+    String? number,
+    List<Repair>? repairs,
+    bool? check,
+    String? userName,
+    String? lastCheckDate,
+  });
 
   /// Удаляет опору по её [id].
   ///

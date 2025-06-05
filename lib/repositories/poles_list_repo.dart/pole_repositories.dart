@@ -79,11 +79,17 @@ class PoleRepository implements AbstractPoleRepositories {
     String id, {
     String? number,
     List<Repair>? repairs,
+    bool? check,
+    String? userName,
+    String? lastCheckDate,
   }) async {
     try {
       final updateData = <String, dynamic>{};
       if (number != null) updateData['number'] = number;
       if (repairs != null) updateData['repairs'] = repairs;
+      if (check != null) updateData['check'] = check;
+      if (userName != null) updateData['userName'] = userName;
+      if (lastCheckDate != null) updateData['lastCheckDate'] = lastCheckDate;
 
       await supabase
           .from('poles')

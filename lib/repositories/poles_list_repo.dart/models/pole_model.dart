@@ -62,6 +62,24 @@ class Pole extends Equatable {
     };
   }
 
+  Pole copyWith({
+    String? id,
+    String? number,
+    List<Repair>? repairs,
+    String? userName,
+    bool? check,
+    String? lastCheckDate,
+  }) {
+    return Pole(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      repairs: repairs ?? this.repairs,
+      userName: userName ?? this.userName,
+      check: check ?? this.check,
+      lastCheckDate: lastCheckDate ?? this.lastCheckDate,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

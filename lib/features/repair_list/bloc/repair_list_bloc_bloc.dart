@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cable_road_project/features/repair_list/bloc/repair_list_bloc_handlers.dart';
 import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_pole_repositories.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
@@ -21,39 +22,24 @@ class RepairListBlocBloc
   ///
   /// Подписывается на события [LoadRepairList] и [ToggleRepairCompletionViewEvent].
   RepairListBlocBloc(this.poleRepositories) : super(RepairListInitial()) {
-    on<LoadRepairList>(_onLoadRepairList);
-    on<ToggleRepairCompletionViewEvent>(_onToggleView);
-  }
-
-  /// Обработка события загрузки списка ремонтов [LoadRepairList].
-  ///
-  /// Использует переданную опору [event.pole], не делает повторный запрос в репозиторий.
-  Future<void> _onLoadRepairList(
-    LoadRepairList event,
-    Emitter<RepairListBlocState> emit,
-  ) async {
-    try {
-      emit(RepairListLoading());
-
-      final pole = event.pole; // Repairs уже внутри переданной опоры
-      emit(RepairListLoaded(poleList: [pole]));
-    } catch (e, st) {
-      emit(RepairListLoadingFailure(exception: e));
-      GetIt.I<Talker>().handle(e, st);
-    }
-  }
-
-  /// Обработка события переключения отображения завершённых ремонтов.
-  ///
-  /// Изменяет флаг [showCompleted] в состоянии [RepairListLoaded].
-  void _onToggleView(
-    ToggleRepairCompletionViewEvent event,
-    Emitter<RepairListBlocState> emit,
-  ) {
-    if (state is RepairListLoaded) {
-      final current = state as RepairListLoaded;
-      emit(current.copyWith(showCompleted: !current.showCompleted));
-    }
+    on<LoadRepairList>((event, emit) => onLoadRepairListHandler(event, emit));
+    on<ToggleRepairCompletionViewEvent>(
+      (event, emit) => onToggleViewHandler(event, emit, state),
+    );
+    on<AddRepairLocal>((event, emit) => onAddRepairHandler(event, emit, state));
+    on<DeleteRepairLocal>(
+      (event, emit) => onDeleteRepairHandler(event, emit, state),
+    );
+    on<SubmitRepairs>(
+      (event, emit) =>
+          onSubmitRepairsHandler(event, emit, state, poleRepositories),
+    );
+    on<ToggleRepairCompletedLocal>(
+      (event, emit) => onToggleRepairCompletedHandler(event, emit, state),
+    );
+    on<EditRepairLocal>(
+      (event, emit) => onEditRepairHandler(event, emit, state),
+    );
   }
 
   /// Обработка необработанных ошибок внутри BLoC.

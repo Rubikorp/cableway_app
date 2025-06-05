@@ -72,8 +72,11 @@ class PoleSearchDelegate extends SearchDelegate<String> {
             itemCount: poles.length,
             separatorBuilder: (context, index) => const Divider(),
             itemBuilder:
-                (context, index) =>
-                    PoleTile(pole: poles[index], bloc: polesBloc),
+                (context, index) => PoleTile(
+                  pole: poles[index],
+                  bloc: polesBloc,
+                  searchQuery: query,
+                ),
           );
         } else if (state is PolesLoading) {
           return Center(child: CircularProgressIndicator());

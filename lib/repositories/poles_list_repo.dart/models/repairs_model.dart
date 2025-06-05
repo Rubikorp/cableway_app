@@ -58,6 +58,24 @@ class Repair extends Equatable {
     };
   }
 
+  Repair copyWith({
+    String? id,
+    String? description,
+    bool? urgent,
+    bool? completed,
+    String? date,
+    String? dateComplete,
+  }) {
+    return Repair(
+      id: id ?? this.id,
+      description: description ?? this.description,
+      urgent: urgent ?? this.urgent,
+      completed: completed ?? this.completed,
+      date: date ?? this.date,
+      dateComplete: dateComplete ?? this.dateComplete,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
