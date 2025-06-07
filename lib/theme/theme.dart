@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 
 final lightTheme = ThemeData(
-  primarySwatch: Colors.lightBlue,
-  dividerColor: Colors.blueGrey, // Цвет разделителя между элементами
-  scaffoldBackgroundColor: Color.fromARGB(
-    255,
-    255,
-    247,
-    199,
-  ), // Цвет фона для Scaffold (всего экрана)
-  listTileTheme: const ListTileThemeData(
-    iconColor: Colors.black, // Цвет иконок в списке
+  scaffoldBackgroundColor: const Color.fromARGB(255, 255, 236, 174),
+  primaryColor: const Color(0xFFFFC107),
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    primary: const Color(0xFFFFC107),
+    secondary: Colors.black,
+  ),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Color(0xFFFFC107),
+    foregroundColor: Colors.black,
   ),
   appBarTheme: const AppBarTheme(
-    backgroundColor: Color.fromARGB(255, 255, 217, 0), // Цвет фона AppBar
-    elevation: 0,
+    backgroundColor: Color(0xFFFFC107),
+    elevation: 1,
+    iconTheme: IconThemeData(color: Colors.black),
     titleTextStyle: TextStyle(
-      // Стиль текста заголовка в AppBar
       color: Colors.black,
-      fontWeight: FontWeight.w700,
-      fontSize: 20.0,
+      fontWeight: FontWeight.w600,
+      fontSize: 20,
     ),
+  ),
+  primarySwatch: Colors.lightBlue,
+  dividerColor: Color(0xFFFFC107), // Цвет разделителя между элементами
+  listTileTheme: const ListTileThemeData(
+    iconColor: Colors.black, // Цвет иконок в списке
   ),
   textTheme: const TextTheme(
     bodyMedium: TextStyle(
@@ -30,9 +34,9 @@ final lightTheme = ThemeData(
       fontSize: 20.0,
     ),
     labelSmall: TextStyle(
-      // Стиль для подзаголовков (например, цена)
-      color: Colors.black26,
-      fontWeight: FontWeight.w700,
+      // Стиль для подзаголовков
+      color: Colors.black87,
+      fontWeight: FontWeight.normal,
       fontSize: 14.0,
     ),
     titleLarge: TextStyle(
@@ -42,16 +46,24 @@ final lightTheme = ThemeData(
     ),
     labelMedium: TextStyle(
       color: Colors.black,
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    ),
+    labelLarge: TextStyle(
+      color: Colors.black,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.all(15),
-      backgroundColor: const Color.fromARGB(255, 250, 171, 1),
-      foregroundColor: const Color.fromARGB(255, 20, 20, 20),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      backgroundColor: Colors.yellow.shade700, // Жёлтая кнопка
+      foregroundColor: Colors.black87, // Цвет текста и иконок
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      shadowColor: Colors.black.withOpacity(0.2), // Мягкая тень
     ),
   ),
 );

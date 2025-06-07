@@ -19,25 +19,39 @@ class CustomBoxList extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(width: 1, color: borderColor),
         color: bgColor,
+        border: Border.all(color: borderColor, width: 1.5),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: borderColor.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(title, style: theme.textTheme.titleMedium),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: borderColor,
+            ),
           ),
+          const SizedBox(height: 8),
           ...repairs.map(
-            (span) => RichText(
-              text: TextSpan(
-                text: "- ",
-                style: theme.textTheme.labelMedium,
-                children: [span],
+            (span) => Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: RichText(
+                text: TextSpan(
+                  style: theme.textTheme.labelMedium,
+                  children: [const TextSpan(text: "• "), span],
+                ),
               ),
             ),
           ),

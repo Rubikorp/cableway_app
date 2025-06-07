@@ -87,20 +87,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// Если совпадение найдено — эмитит [Authenticated], иначе — [Unauthenticated].
   Future<void> _checkAuthStatus(Emitter<AuthState> emit) async {
     GetIt.I<Talker>().debug('Проверка авторизации');
-    final users = await authRepositories.fetchUsers();
-    final savedUser = authBox.get('currentUser');
+    try {
+      final users = await authRepositories.fetchUsers();
+      final savedUser = authBox.get('currentUser');
 
-    final user = users.firstWhereOrNull(
-      (u) =>
-          u.name.trim() == savedUser!.name.trim() &&
-          u.password.trim() == savedUser.password.trim(),
-    );
+      final user = users.firstWhereOrNull(
+        (u) =>
+            u.name.trim() == savedUser!.name.trim() &&
+            u.password.trim() == savedUser.password.trim(),
+      );
 
-    if (savedUser != null && user != null) {
-      GetIt.I<Talker>().debug('Авторизован как ${savedUser.name}');
-      emit(Authenticated(savedUser));
-    } else {
+      if (savedUser != null && user != null) {
+        GetIt.I<Talker>().debug('Авторизован как ${savedUser.name}');
+        emit(Authenticated(savedUser));
+      }
+    } catch (e, st) {
       GetIt.I<Talker>().debug('Не авторизован');
+      GetIt.I<Talker>().error(e, st);
       emit(Unauthenticated());
     }
   }

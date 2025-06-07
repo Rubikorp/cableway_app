@@ -50,6 +50,29 @@ class PolesBloc extends Bloc<PolesEvent, PolesState> {
         GetIt.instance<Talker>().handle(e, st);
       }
     });
+    // on<DeletePole>((event, emit) async {
+    //   emit(DeletePoleLoading());
+    //   try {
+    //     await polesRepository.deletePole(event.deletePoleId);
+
+    //     final poles = await polesRepository.fetchPoles();
+    //     poles.sort((a, b) {
+    //       final aIsNumber = int.tryParse(a.number);
+    //       final bIsNumber = int.tryParse(b.number);
+    //       if (aIsNumber == null && bIsNumber != null) return 1;
+    //       if (aIsNumber != null && bIsNumber == null) return -1;
+    //       if (aIsNumber == null && bIsNumber == null) {
+    //         return a.number.compareTo(b.number);
+    //       }
+    //       return aIsNumber!.compareTo(bIsNumber!);
+    //     });
+
+    //     emit(PolesListLoaded(poles: poles, originalPoles: poles));
+    //   } catch (e, st) {
+    //     emit(DeletePoleFailure(exception: e));
+    //     GetIt.instance<Talker>().handle(e, st);
+    //   }
+    // });
   }
 
   /// Загружает список опор из репозитория и сортирует их по номеру.

@@ -17,19 +17,27 @@ class PolesListScreen extends StatefulWidget {
 }
 
 class _PolesListScreenState extends State<PolesListScreen> {
-  final _polesListBloc = PolesBloc(GetIt.I<AbstractPoleRepositories>());
+  late final PolesBloc _polesListBloc;
   final _scrollController = ScrollController();
 
   @override
   void initState() {
-    _polesListBloc.add(LoadPoles());
     super.initState();
+    _polesListBloc = PolesBloc(GetIt.I<AbstractPoleRepositories>());
+    _polesListBloc.add(LoadPoles());
   }
 
   @override
   void dispose() {
+    _polesListBloc.close(); // не забудь закрыть блок
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _refreshPoles() async {
+    final completer = Completer<void>();
+    _polesListBloc.add(LoadPoles(completer: completer));
+    return completer.future;
   }
 
   @override
@@ -37,26 +45,11 @@ class _PolesListScreenState extends State<PolesListScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder:
-                  (_) => AddPoleScreen(
-                    onPoleAdded: () {
-                      _polesListBloc.add(LoadPoles());
-                    },
-                  ),
-            ),
-          );
-        },
-        child: Icon(Icons.add),
-      ),
+      drawer: const AppDrawer(),
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Главная'),
-        leading: DrawerButton(),
+        title: const Text('Главная'),
+        leading: const DrawerButton(),
         actions: [
           BlocBuilder<PolesBloc, PolesState>(
             bloc: _polesListBloc,
@@ -64,17 +57,15 @@ class _PolesListScreenState extends State<PolesListScreen> {
               final isSorted = state is PolesListLoaded && state.isSorted;
 
               return IconButton(
-                onPressed: () {
-                  _polesListBloc.add(SortPoles());
-                },
+                onPressed: () => _polesListBloc.add(SortPoles()),
                 icon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    return RotationTransition(turns: animation, child: child);
-                  },
+                  transitionBuilder:
+                      (child, animation) =>
+                          RotationTransition(turns: animation, child: child),
                   child: Icon(
                     isSorted ? Icons.filter_alt : Icons.sort,
-                    key: ValueKey<bool>(isSorted), // обязательно для анимации
+                    key: ValueKey(isSorted),
                   ),
                 ),
               );
@@ -87,52 +78,75 @@ class _PolesListScreenState extends State<PolesListScreen> {
                 delegate: PoleSearchDelegate(polesBloc: _polesListBloc),
               );
             },
-            icon: Icon(Icons.search, color: Colors.black),
+            icon: const Icon(Icons.search, color: Colors.black),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          final completer = Completer<void>();
-          _polesListBloc.add(LoadPoles(completer: completer));
-          return completer.future;
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (_) => AddPoleScreen(
+                    onPoleAdded: () => _polesListBloc.add(LoadPoles()),
+                  ),
+            ),
+          );
+
+          if (result == true) {
+            _polesListBloc.add(LoadPoles());
+          }
         },
-        child: BlocBuilder<PolesBloc, PolesState>(
-          bloc: _polesListBloc,
-          builder: (context, state) {
-            if (state is PolesListLoaded) {
-              return Scrollbar(
-                thumbVisibility: true,
-                controller: _scrollController,
-                interactive: true,
-                child: ListView.separated(
+        child: const Icon(Icons.add),
+      ),
+      body: BlocListener<PolesBloc, PolesState>(
+        bloc: _polesListBloc,
+        listenWhen: (prev, curr) => curr is DeletedPoleLoaded,
+        listener: (context, state) {
+          if (state is DeletedPoleLoaded) {
+            _polesListBloc.add(LoadPoles());
+          }
+        },
+        child: RefreshIndicator(
+          onRefresh: _refreshPoles,
+          child: BlocBuilder<PolesBloc, PolesState>(
+            bloc: _polesListBloc,
+            builder: (context, state) {
+              if (state is PolesListLoaded) {
+                return Scrollbar(
+                  thumbVisibility: true,
                   controller: _scrollController,
-                  padding: EdgeInsets.all(5),
-                  itemCount: state.poles.length,
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final pole = state.poles[index];
-                    return PoleTile(pole: pole, bloc: _polesListBloc);
-                  },
-                ),
-              );
-            } else if (state is PolesLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is PolesLoadingFailure) {
-              return Center(
-                child: ErrorGetPolesList(
-                  theme: theme,
-                  polesListBloc: _polesListBloc,
-                  state: state,
-                ),
-              );
-            } else {
-              return Center(child: Text('Нет данных'));
-            }
-          },
+                  interactive: true,
+                  child: ListView.separated(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(5),
+                    itemCount: state.poles.length,
+                    separatorBuilder:
+                        (_, __) => const Divider(color: Color(0xFFFFC107)),
+                    itemBuilder: (context, index) {
+                      final pole = state.poles[index];
+                      return PoleTile(pole: pole, bloc: _polesListBloc);
+                    },
+                  ),
+                );
+              } else if (state is PolesLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is PolesLoadingFailure) {
+                return Center(
+                  child: ErrorGetPolesList(
+                    theme: theme,
+                    polesListBloc: _polesListBloc,
+                    state: state,
+                  ),
+                );
+              } else {
+                return const Center(child: Text('Нет данных'));
+              }
+            },
+          ),
         ),
       ),
-      drawer: const AppDrawer(),
     );
   }
 }

@@ -5,7 +5,9 @@ import '../bloc/repair_list_bloc_bloc.dart';
 import 'repair_bottom_sheet.dart';
 
 class RepairListAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const RepairListAppBar({super.key});
+  final ThemeData themeData;
+
+  const RepairListAppBar({super.key, required this.themeData});
 
   @override
   Widget build(BuildContext context) {
@@ -14,48 +16,62 @@ class RepairListAppBar extends StatelessWidget implements PreferredSizeWidget {
         builder: (context, state) {
           if (state is RepairListLoaded) {
             final pole = state.poleList.first;
-            return Center(child: Text(pole.number));
+            return Text(
+              "Опора №${pole.number}",
+              style: themeData.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            );
           }
           return const Text('');
         },
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.add),
-          tooltip: 'Добавить ремонт',
-          onPressed: () => showRepairBottomSheet(outerContext: context),
+        Tooltip(
+          message: 'Добавить ремонт',
+          child: IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => showRepairBottomSheet(outerContext: context),
+          ),
         ),
         BlocBuilder<RepairListBlocBloc, RepairListBlocState>(
           builder: (context, state) {
             if (state is RepairListLoaded) {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder:
-                    (child, animation) =>
-                        ScaleTransition(scale: animation, child: child),
-                child: IconButton(
-                  key: ValueKey<bool>(state.showCompleted),
-                  icon: Icon(
+              return Tooltip(
+                message:
                     state.showCompleted
-                        ? Icons.check_box
-                        : Icons.check_box_outline_blank,
-                    color: state.showCompleted ? Colors.green : Colors.grey,
-                  ),
-                  tooltip:
+                        ? 'Показать невыполненные'
+                        : 'Показать выполненные',
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder:
+                      (child, animation) =>
+                          ScaleTransition(scale: animation, child: child),
+                  child: IconButton(
+                    key: ValueKey<bool>(state.showCompleted),
+                    icon: Icon(
                       state.showCompleted
-                          ? 'Показать невыполненные'
-                          : 'Показать выполненные',
-                  onPressed: () {
-                    context.read<RepairListBlocBloc>().add(
-                      ToggleRepairCompletionViewEvent(),
-                    );
-                  },
+                          ? Icons.check_box
+                          : Icons.check_box_outline_blank,
+                      color:
+                          state.showCompleted
+                              ? Colors.green
+                              : Colors.grey.shade800,
+                    ),
+                    onPressed: () {
+                      context.read<RepairListBlocBloc>().add(
+                        ToggleRepairCompletionViewEvent(),
+                      );
+                    },
+                  ),
                 ),
               );
             }
             return const SizedBox.shrink();
           },
         ),
+        const SizedBox(width: 8),
       ],
     );
   }
