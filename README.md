@@ -84,7 +84,7 @@ flutter pub run build_runner build
 Все ошибки, HTTP-запросы и события BLoC логируются с помощью talker_flutter, talker_dio_logger и talker_bloc_logger.
 
 
-📚 Будущие улучшения
+## 📚 Будущие улучшения
 📡 Фоновая синхронизация с Supabase.
 
 🔔 Push-уведомления о срочных ремонтах.
