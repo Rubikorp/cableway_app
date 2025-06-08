@@ -1,13 +1,17 @@
 part of 'poles_bloc.dart';
 
 /// Базовый класс событий для [PolesBloc].
-abstract class PolesEvent extends Equatable {}
+abstract class PolesEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 /// Событие загрузки списка опор.
 ///
-/// Может использоваться [Completer], чтобы сигнализировать завершение загрузки.
+/// Может использоваться [completer], чтобы отслеживать завершение загрузки,
+/// например, при pull-to-refresh.
 class LoadPoles extends PolesEvent {
-  /// Completer, позволяющий отслеживать завершение загрузки (необязательно).
+  /// Completer, позволяющий отслеживать завершение загрузки (необязательный).
   final Completer? completer;
 
   /// Создает событие загрузки опор.
@@ -17,38 +21,46 @@ class LoadPoles extends PolesEvent {
   List<Object?> get props => [completer];
 }
 
-/// Событие сортировки опор.
+/// Событие сортировки списка опор.
 ///
-/// Повторный вызов отменяет сортировку и восстанавливает исходный список.
+/// При первом вызове сортирует по срочности и номеру.
+/// При повторном — возвращает оригинальный порядок.
 class SortPoles extends PolesEvent {
   @override
   List<Object?> get props => [];
 }
 
-/// Событие поиска опор по номеру или описанию ремонта.
+/// Событие фильтрации опор по номеру или описанию ремонта.
 ///
-/// [query] — строка для поиска, регистр не учитывается.
+/// Поиск нечувствителен к регистру.
 class SearchPole extends PolesEvent {
   /// Поисковый запрос.
   final String query;
 
-  /// Создает событие поиска.
+  /// Создает событие фильтрации.
   SearchPole({required this.query});
 
   @override
   List<Object?> get props => [query];
 }
 
-/// Событие сброса фильтрации или сортировки списка опор.
+/// Событие сброса сортировки и фильтрации.
+///
+/// Возвращает отображаемый список к исходному состоянию.
 class ResetPoles extends PolesEvent {
   @override
   List<Object?> get props => [];
 }
 
+/// Событие удаления опоры по ID.
+///
+/// [deletePoleId] — идентификатор опоры.
+/// [completer] используется для оповещения об окончании удаления.
 class DeletePole extends PolesEvent {
   final String deletePoleId;
   final Completer? completer;
 
+  /// Создает событие удаления опоры.
   DeletePole({required this.deletePoleId, this.completer});
 
   @override

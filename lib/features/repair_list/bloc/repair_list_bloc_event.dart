@@ -1,21 +1,24 @@
 part of 'repair_list_bloc_bloc.dart';
 
-/// Абстрактный класс для событий [RepairListBlocBloc].
+/// Абстрактный класс для всех событий [RepairListBloc].
 ///
-/// Все события, обрабатываемые в RepairListBloc, должны наследоваться от этого класса.
-abstract class RepairListBlocEvent extends Equatable {}
+/// Все конкретные события должны наследоваться от этого класса.
+abstract class RepairListBlocEvent extends Equatable {
+  const RepairListBlocEvent();
+
+  @override
+  List<Object?> get props => [];
+}
 
 /// Событие для загрузки списка ремонтов для определённой опоры.
 ///
 /// Используется при открытии экрана с ремонтами.
 ///
-/// [pole] — опора, для которой необходимо отобразить ремонты.
+/// [pole] — опора, ремонты которой необходимо отобразить.
 class LoadRepairList extends RepairListBlocEvent {
-  /// Опора, ремонты которой нужно загрузить.
   final Pole pole;
 
-  /// Конструктор события [LoadRepairList].
-  LoadRepairList({required this.pole});
+  const LoadRepairList({required this.pole});
 
   @override
   List<Object?> get props => [pole];
@@ -23,48 +26,73 @@ class LoadRepairList extends RepairListBlocEvent {
 
 /// Событие переключения отображения завершённых ремонтов.
 ///
-/// Используется для смены фильтра: показывать все ремонты или только активные.
+/// Инвертирует флаг [showCompleted] в состоянии [RepairListLoaded].
 class ToggleRepairCompletionViewEvent extends RepairListBlocEvent {
-  @override
-  List<Object?> get props => [];
+  const ToggleRepairCompletionViewEvent();
 }
 
+/// Событие добавления нового ремонта локально.
+///
+/// [repair] — добавляемый ремонт.
 class AddRepairLocal extends RepairListBlocEvent {
   final Repair repair;
-  AddRepairLocal({required this.repair});
+
+  const AddRepairLocal({required this.repair});
+
   @override
   List<Object?> get props => [repair];
 }
 
+/// Событие удаления ремонта локально.
+///
+/// [repair] — удаляемый ремонт.
 class DeleteRepairLocal extends RepairListBlocEvent {
   final Repair repair;
-  DeleteRepairLocal(this.repair);
+
+  const DeleteRepairLocal(this.repair);
+
   @override
   List<Object?> get props => [repair];
 }
 
+/// Событие редактирования ремонта локально.
+///
+/// Заменяет описание и срочность ремонта.
+/// [oldRepair] — редактируемый ремонт.
+/// [newDescription] — новое описание.
+/// [newUrgent] — новое значение срочности.
 class EditRepairLocal extends RepairListBlocEvent {
   final Repair oldRepair;
   final String newDescription;
   final bool newUrgent;
-  EditRepairLocal({
+
+  const EditRepairLocal({
     required this.oldRepair,
     required this.newDescription,
     required this.newUrgent,
   });
+
   @override
   List<Object?> get props => [oldRepair, newDescription, newUrgent];
 }
 
+/// Событие переключения статуса выполнения ремонта.
+///
+/// Инвертирует значение поля [completed].
 class ToggleRepairCompletedLocal extends RepairListBlocEvent {
   final Repair repair;
-  ToggleRepairCompletedLocal(this.repair);
+
+  const ToggleRepairCompletedLocal(this.repair);
+
   @override
   List<Object?> get props => [repair];
 }
 
+/// Событие отправки (сохранения) списка ремонтов на сервер.
+///
+/// Используется при финализации редактирования.
 class SubmitRepairs extends RepairListBlocEvent {
-  SubmitRepairs();
+  const SubmitRepairs();
 
   @override
   List<Object?> get props => [];

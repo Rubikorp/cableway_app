@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cable_road_project/cable_road_app.dart';
 import 'package:cable_road_project/features/auth/bloc/auth_bloc.dart';
 import 'package:cable_road_project/features/poles_list/bloc/poles_bloc.dart';
@@ -16,10 +18,22 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final talker = TalkerFlutter.init();
-  GetIt.I.registerSingleton(talker);
-  GetIt.I<Talker>().debug('Talker started...');
 
+  FlutterError.onError = (FlutterErrorDetails details) {
+    GetIt.I<Talker>().handle(details.exception, details.stack);
+  };
+
+  runZonedGuarded(
+    () async {
+      await runMainApp();
+    },
+    (error, stackTrace) {
+      GetIt.I<Talker>().handle(error, stackTrace);
+    },
+  );
+}
+
+Future<void> runMainApp() async {
   const polesBoxKey = 'poles_box';
   const usersBoxKey = 'users_box';
 
@@ -30,10 +44,21 @@ void main() async {
   final polesBox = await Hive.openBox<Pole>(polesBoxKey);
   final authBox = await Hive.openBox<UserInfo>(usersBoxKey);
 
+  final talker = TalkerFlutter.init();
+  GetIt.I.registerSingleton(talker);
+  GetIt.I<Talker>().debug('Talker started...');
+
   await dotenv.load(fileName: ".env");
+
+  final anonKey = dotenv.env['PUBLIC_SUPABASE_ANON_KEY'];
+  if (anonKey == null) {
+    GetIt.I<Talker>().critical('Supabase anonKey is null!');
+    return;
+  }
+
   await Supabase.initialize(
     url: 'https://hpzzviwlnkweomaosyle.supabase.co',
-    anonKey: dotenv.env['PUBLIC_SUPABASE_ANON_KEY']!,
+    anonKey: anonKey,
   );
 
   final supabase = Supabase.instance.client;
@@ -41,15 +66,14 @@ void main() async {
   Bloc.observer = TalkerBlocObserver(
     talker: talker,
     settings: TalkerBlocLoggerSettings(
-      printStateFullData: false,
-      printEventFullData: false,
+      printStateFullData: true,
+      printEventFullData: true,
     ),
   );
 
   GetIt.I.registerLazySingleton<AbstractPoleRepositories>(
     () => PoleRepository(supabase: supabase, polesBox: polesBox),
   );
-
   GetIt.I.registerLazySingleton<AbstractAuthRepositories>(
     () => AuthRepositories(supabase: supabase),
   );

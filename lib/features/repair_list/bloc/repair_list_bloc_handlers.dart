@@ -19,7 +19,8 @@ Future<void> onLoadRepairListHandler(
   try {
     emit(RepairListLoading());
 
-    final pole = event.pole; // Repairs уже внутри переданной опоры
+    // Используем опору из события. Список ремонтов уже в ней.
+    final pole = event.pole;
     emit(RepairListLoaded(poleList: [pole]));
   } catch (e, st) {
     emit(RepairListLoadingFailure(exception: e));
@@ -29,102 +30,99 @@ Future<void> onLoadRepairListHandler(
 
 /// Обработка события переключения отображения завершённых ремонтов.
 ///
-/// Изменяет флаг [showCompleted] в состоянии [RepairListLoaded].
+/// Инвертирует флаг [showCompleted] в состоянии [RepairListLoaded].
 void onToggleViewHandler(
   ToggleRepairCompletionViewEvent event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
 ) {
   if (state is RepairListLoaded) {
-    final current = state;
-    emit(current.copyWith(showCompleted: !current.showCompleted));
+    emit(state.copyWith(showCompleted: !state.showCompleted));
   }
 }
 
+/// Обработка добавления ремонта [AddRepairLocal].
+///
+/// Добавляет ремонт в список текущей опоры.
 void onAddRepairHandler(
   AddRepairLocal event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
 ) {
   if (state is RepairListLoaded) {
-    final current = state;
-    final updatedPole = current.poleList.first;
+    final pole = state.poleList.first;
+    final updatedRepairs = List<Repair>.from(pole.repairs)..add(event.repair);
 
-    final updatedRepairs = List<Repair>.from(updatedPole.repairs)
-      ..add(event.repair);
-
-    final updatedPoleWithNewRepairs = updatedPole.copyWith(
-      repairs: updatedRepairs,
-    );
-
-    emit(current.copyWith(poleList: [updatedPoleWithNewRepairs]));
+    emit(state.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
   }
 }
 
+/// Обработка удаления ремонта [DeleteRepairLocal].
+///
+/// Удаляет указанный ремонт из списка текущей опоры.
 void onDeleteRepairHandler(
   DeleteRepairLocal event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
 ) {
   if (state is RepairListLoaded) {
-    final current = state;
-    final updatedPole = current.poleList.first;
-
-    final updatedRepairs = List<Repair>.from(updatedPole.repairs)
+    final pole = state.poleList.first;
+    final updatedRepairs = List<Repair>.from(pole.repairs)
       ..removeWhere((r) => r == event.repair);
 
-    final updatedPoleWithNewRepairs = updatedPole.copyWith(
-      repairs: updatedRepairs,
-    );
-
-    emit(current.copyWith(poleList: [updatedPoleWithNewRepairs]));
+    emit(state.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
   }
 }
 
+/// Обработка события сохранения всех ремонтов [SubmitRepairs].
+///
+/// Отправляет обновлённую опору с ремонтами на сервер.
 Future<void> onSubmitRepairsHandler(
   SubmitRepairs event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
   AbstractPoleRepositories poleRepositories,
 ) async {
+  if (state is! RepairListLoaded) return;
+
   final authBloc = GetIt.I<AuthBloc>();
-  var userName = 'Неизвестный пользователь';
-  final stateAuth = authBloc.state;
-  if (stateAuth is Authenticated) {
-    userName = stateAuth.user.name;
+  String userName = 'Неизвестный пользователь';
+
+  if (authBloc.state is Authenticated) {
+    userName = (authBloc.state as Authenticated).user.name;
   }
 
-  if (state is RepairListLoaded) {
-    final current = state;
-    final poleToUpdate = current.poleList.first;
+  final poleToUpdate = state.poleList.first;
 
-    emit(RepairListLoading());
-    try {
-      await poleRepositories.updatePole(
-        poleToUpdate.id,
-        number: poleToUpdate.number,
-        repairs: poleToUpdate.repairs,
-        check: true,
-        userName: userName,
-        lastCheckDate: formatDate(DateTime.now()),
-      );
-      GetIt.I<Talker>().debug(poleToUpdate);
-      emit(RepairListLoaded(poleList: [poleToUpdate]));
-    } catch (e, st) {
-      emit(RepairListLoadingFailure(exception: e));
-      GetIt.I<Talker>().handle(e, st);
-    }
+  emit(RepairListLoading());
+  try {
+    await poleRepositories.updatePole(
+      poleToUpdate.id,
+      number: poleToUpdate.number,
+      repairs: poleToUpdate.repairs,
+      check: true,
+      userName: userName,
+      lastCheckDate: formatDate(DateTime.now()),
+    );
+
+    GetIt.I<Talker>().debug(poleToUpdate);
+    emit(RepairListLoaded(poleList: [poleToUpdate]));
+  } catch (e, st) {
+    emit(RepairListLoadingFailure(exception: e));
+    GetIt.I<Talker>().handle(e, st);
   }
 }
 
+/// Обработка локального переключения статуса выполнения ремонта.
+///
+/// Меняет значение `completed` и дату завершения.
 void onToggleRepairCompletedHandler(
   ToggleRepairCompletedLocal event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
 ) {
   if (state is RepairListLoaded) {
-    final current = state;
-    final pole = current.poleList.first;
+    final pole = state.poleList.first;
 
     final updatedRepairs =
         pole.repairs.map((r) {
@@ -137,18 +135,20 @@ void onToggleRepairCompletedHandler(
           return r;
         }).toList();
 
-    emit(current.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
+    emit(state.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
   }
 }
 
+/// Обработка редактирования описания ремонта.
+///
+/// Обновляет поле [description] у соответствующего ремонта.
 void onEditRepairHandler(
   EditRepairLocal event,
   Emitter<RepairListBlocState> emit,
   RepairListBlocState state,
 ) {
   if (state is RepairListLoaded) {
-    final current = state;
-    final pole = current.poleList.first;
+    final pole = state.poleList.first;
 
     final updatedRepairs =
         pole.repairs.map((r) {
@@ -158,6 +158,6 @@ void onEditRepairHandler(
           return r;
         }).toList();
 
-    emit(current.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
+    emit(state.copyWith(poleList: [pole.copyWith(repairs: updatedRepairs)]));
   }
 }

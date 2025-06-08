@@ -1,62 +1,70 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_pole_repositories.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:talker_flutter/talker_flutter.dart';
+
+import 'package:cable_road_project/repositories/poles_list_repo.dart/abstract_pole_repositories.dart';
 
 import '../../../repositories/poles_list_repo.dart/models/models.dart';
 import '../../auth/auth.dart';
-part 'add_pole_bloc_event.dart';
-part 'add_pole_bloc_state.dart';
+import 'add_pole_handler.dart';
 
+part 'add_pole_event.dart';
+part 'add_pole_state.dart';
+
+/// BLoC для управления логикой добавления новой опоры и ремонтов к ней.
+///
+/// Обрабатывает события:
+/// - [AddRepairPressed] — добавление ремонта к опоре.
+/// - [LoadAddPole] — сохранение новой опоры на сервер.
+/// - [ResetAddPoleState] — сброс состояния формы добавления.
+///
+/// Использует репозиторий [AbstractPoleRepositories] для взаимодействия с API,
+/// а также получает имя пользователя через [AuthBloc] с помощью [GetIt].
 class AddPoleBloc extends Bloc<AddPoleBlocEvent, AddPoleBlocState> {
+  /// Репозиторий для операций над опорами.
   final AbstractPoleRepositories polesRepository;
 
+  /// Конструктор BLoC. Принимает репозиторий опор.
+  ///
+  /// Начальное состояние — [AddPoleLoaded] с пустым списком ремонтов.
   AddPoleBloc(this.polesRepository) : super(const AddPoleLoaded()) {
+    /// Обработчик события добавления ремонта.
     on<AddRepairPressed>((event, emit) {
-      try {
-        final currentState = state as AddPoleLoaded;
-        final updatedRepairs = [...currentState.repairs, event.repair];
-        emit(currentState.copyWith(repairs: updatedRepairs));
-      } catch (e, st) {
-        GetIt.instance<Talker>().handle(e, st);
-      }
+      onAddRepairHandler(event, emit, state);
     });
 
+    /// Обработчик события сохранения новой опоры.
     on<LoadAddPole>((event, emit) async {
+      // Проверяем, что текущее состояние поддерживает сохранение
       if (state is! AddPoleLoaded) return;
-
       final currentState = state as AddPoleLoaded;
 
-      // Получаем имя пользователя через GetIt
+      // Получаем имя пользователя через AuthBloc, зарегистрированный в GetIt
       final authBloc = GetIt.I<AuthBloc>();
       var userName = 'Неизвестный пользователь';
       final stateAuth = authBloc.state;
       if (stateAuth is Authenticated) {
         userName = stateAuth.user.name;
       }
+
+      // Эмитим состояние загрузки перед сохранением
       emit(AddPoleLoading());
-      try {
-        await polesRepository.addPole(
-          PoleAdd(
-            number: event.number,
-            repairs: currentState.repairs,
-            check: true,
-            userName: userName,
-          ),
-        );
-      } catch (e, st) {
-        emit(AddPoleLoadingFailure(exception: e) as AddPoleLoaded);
-        GetIt.instance<Talker>().handle(e, st);
-      } finally {
-        event.completer?.complete();
-      }
+
+      // Выполняем сохранение опоры через репозиторий
+      await onLoadAddPoleHundler(
+        event,
+        currentState,
+        userName,
+        emit,
+        polesRepository,
+      );
     });
 
+    /// Обработчик события сброса состояния (например, при очистке формы).
     on<ResetAddPoleState>((event, emit) {
-      emit(const AddPoleLoaded()); // или emit(state.copyWith(error: null));
+      emit(const AddPoleLoaded());
     });
   }
 }
